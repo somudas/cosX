@@ -58,8 +58,10 @@ def logout(request):
 
 def products(request):
     all_products = Products.objects.all()
+    for i in range(len(all_products)):
+        all_products[i].p_image = str(all_products[i].p_image)[len("/static/")-1: ]
+        print(all_products[i].p_image)
 
-    
     return render(request, 'cosx_home/products.html', context={
         'products': all_products
     });

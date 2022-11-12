@@ -1,13 +1,63 @@
 <html>
 <head>
     <style>
-        
+        body{
+            background-color:#eee;
+            font-family: "Poppins", sans-serif;
+            font-weight: 300;
+           }
+    
+           
+           
+    
+           .search{
+           position: relative;
+           box-shadow: 0 0 40px rgba(51, 51, 51, .1);
+             
+           }
+    
+           .search input{
+    
+            height: 60px;
+            text-indent: 25px;
+            border: 2px solid #d6d4d4;
+    
+    
+           }
+    
+    
+           .search input:focus{
+    
+            box-shadow: none;
+            border: 2px solid black;
+    
+    
+           }
+    
+           .search .fa-search{
+    
+            position: absolute;
+            top: 20px;
+            left: 16px;
+    
+           }
+    
+           .search button{
+    
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            height: 50px;
+            width: 110px;
+            background: black;
+    
+           }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
 </head>
 <body style="background: #ddd; margin:0; font-family: Roboto">
 
-    <div class="px-5 bg-dark w-100 mb-0">
+    <div class="px-5 bg-dark w-100 mb-0 sticky-top" >
         <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 border-bottom">
           <a href="/" class="text-decoration-none text-light fw-bold lead w-25">
             cosX

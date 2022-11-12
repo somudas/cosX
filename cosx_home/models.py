@@ -11,6 +11,6 @@ class Products(models.Model):
     p_buycount = models.IntegerField()
     p_brand = models.CharField(max_length=100)
     p_category = models.CharField(max_length=100)
-    p_image = models.ImageField(upload_to="cosx_home/images/")
-
-
+    p_image = models.ImageField(upload_to="static/images/")
+    p_price = models.DecimalField(max_digits=5, decimal_places=2)
+    
