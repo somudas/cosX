@@ -2,7 +2,7 @@ from genericpath import exists
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
-
+from .models import Products
 
 # Create your views here.
 def home(request):
@@ -55,3 +55,11 @@ def logout(request):
     auth.logout(request)
 
     return redirect("cosx-home")
+
+def products(request):
+    all_products = Products.objects.all()
+
+    
+    return render(request, 'cosx_home/products.html', context={
+        'products': all_products
+    });
