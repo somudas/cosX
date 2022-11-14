@@ -2,7 +2,12 @@ from genericpath import exists
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
-from .models import Products
+from .models import Products, Cart, Wallet, Orders
+from django.db.models import Q
+
+from django.contrib.auth.decorators import login_required
+
+
 
 # Create your views here.
 def home(request):
@@ -30,6 +35,9 @@ def register(request):
             user = User.objects.create_user(username=username, email=email, password=password1, first_name=fname, last_name=lname)
             user.save()
 
+            wallet = Wallet(user= user)
+            wallet.save()
+
             return redirect('login')
         else:
             messages.error(request, "both passwords should match!!")    
@@ -45,6 +53,7 @@ def login(request):
         if user is not None:
             auth.login(request, user)
             return redirect('cosx-home')
+        
         messages.error(request, "invalid username/password")
         return redirect('login')
 
@@ -54,14 +63,192 @@ def login(request):
 def logout(request):
     auth.logout(request)
 
-    return redirect("cosx-home")
+    return redirect("login")
 
 def products(request):
     all_products = Products.objects.all()
+
+    p_categories = set([prod.p_category for prod in all_products])
+    print(p_categories)
+    
+
+    query = request.GET.get('product', '')
+    
+    if query != '':
+        all_products = Products.objects.filter(p_category__icontains=query).union( Products.objects.filter(p_name__icontains=query)).union( Products.objects.filter(p_description__icontains=query))
+
+
     for i in range(len(all_products)):
         all_products[i].p_image = str(all_products[i].p_image)[len("/static/")-1: ]
-        print(all_products[i].p_image)
+        all_products[i].p_name = (str(all_products[i].p_name)[:40] + '..') if len(str(all_products[i].p_name)) > 40 else str(all_products[i].p_name)
+        
+        #print(all_products[i].p_name)
+    context={
+        'products':all_products,
+        'categories':p_categories
+    }
+    return render(request, 'cosx_home/products.html', context)
 
-    return render(request, 'cosx_home/products.html', context={
-        'products': all_products
-    });
+
+def productdetails(request,pk):
+    product=Products.objects.get(id=pk)
+    context={
+        'product':product,
+    }
+    return render(request,'cosx_home/productdetails.html',context)
+
+
+@login_required(login_url="/login/")
+def cart(request):
+    product_ids = Cart.objects.filter(user=request.user.id)
+
+    if len(product_ids) == 0:
+        return render(request, 'cosx_home/cart.html', context={})
+    
+    all_products = []
+    for prod in product_ids:
+        all_products.append(Products.objects.get(id=prod.product.id))
+    
+
+
+    return render(request, 'cosx_home/cart.html', context={'products': all_products, 'n_items': len(all_products)})
+
+
+@login_required(login_url="/login/")
+def cart_add(request, pk): 
+    product=Products.objects.get(id=pk)
+    
+    cart = Cart(user=request.user, product=product)
+    for i in Cart.objects.all():
+        if i.user.id == request.user.id and i.product.id == product.id:
+            return redirect('/cart')
+    cart.save()
+    return redirect('/cart')
+
+def checkout(request, pk):
+
+
+
+
+    product=Products.objects.get(id=pk)
+    total_price = product.p_price
+
+
+    if request.method == 'POST':
+            fname = request.POST.get('fname')
+            lname = request.POST.get('lname')
+            addr = request.POST.get('address')
+            email = request.POST.get('email')
+            phoneno = request.POST.get('phoneno')
+
+            order = Orders(
+                fname=fname,
+                lname=lname,
+                price=product.p_price,
+                email=email,
+                product=product,
+                addr1=addr,
+                phoneNum=phoneno,
+                user=request.user
+            )
+            order.save()
+            wallet = Wallet.objects.filter(user=request.user)[0]
+            wallet.wallet -= total_price
+            wallet.save()
+            Cart.objects.filter(user=request.user).delete()
+
+            return redirect('success')
+
+
+
+    wallet = Wallet.objects.filter(user=request.user)[0].wallet
+    flag = True
+    if wallet < total_price:
+        flag = False
+
+    context = {
+        'products': [product],
+        'total_price': total_price,
+        'flag': flag
+    }
+    return render(request, 'cosx_home/checkout.html', context = context)
+
+def checkout_fromcart(request):
+        
+
+
+    products=[]
+    total_price = 0
+    for i in Cart.objects.filter(user=request.user):
+        if request.method == 'POST':
+            fname = request.POST.get('fname')
+            lname = request.POST.get('lname')
+            addr = request.POST.get('address')
+            email = request.POST.get('email')
+            phoneno = request.POST.get('phoneno')
+
+            order = Orders(
+                fname=fname,
+                lname=lname,
+                price=i.product.p_price,
+                email=email,
+                product=i.product,
+                addr1=addr,
+                phoneNum=phoneno,
+                user=request.user
+            )
+            order.save()
+        products.append(i.product)
+        total_price += i.product.p_price
+    
+    if request.method == 'POST':
+        wallet = Wallet.objects.filter(user=request.user)[0]
+        if wallet.wallet >= total_price:
+            wallet.wallet -= total_price
+            wallet.save()
+            Cart.objects.filter(user=request.user).delete()
+            
+            return redirect('success')
+
+
+    wallet = Wallet.objects.filter(user=request.user)[0].wallet
+    flag = True
+    if wallet < total_price:
+        flag = False
+   
+    context={
+        'products': products,
+        'total_price': total_price,
+        'flag': flag
+
+    }
+
+    
+
+    return render(request, 'cosx_home/checkout.html', context=context)
+
+
+
+def wallet(request):
+
+    return render(request, 'cosx_home/wallet.html', context={'wallet':  Wallet.objects.filter(user=request.user)[0].wallet})
+
+
+def success(request):
+    return render(request, 'cosx_home/success.html')
+
+
+def orders(request):
+
+    all_orders = Orders.objects.filter(user=request.user)[::-1]
+    
+    context = {
+        'orders': all_orders
+    }
+
+    return render(request, 'cosx_home/orders.html', context)
+
+def order_details(request, pk):
+    order = Orders.objects.filter(id=pk)[0]
+    
+    return render(request, 'cosx_home/order_details.html', context={'order': order})

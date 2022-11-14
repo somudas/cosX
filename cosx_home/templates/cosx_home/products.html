@@ -5,49 +5,120 @@
 
 {% block content %}
 
-<div class="container pt-3">
+
+<div class="d-flex justify-content-around w-100">
+  <div class="p-2" style="position: sticky;">
+    <p class="display-6">filters</p>
+    
+    {% for category in categories %}
+    <div class="form-check m-2">
+      <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+      <label class="form-check-label" for="flexRadioDefault1">
+        {{ category }}
+      </label>
+    </div>
+    {% endfor %}    
+
+  </div>
+  <div class="p-2 d-flex flex-column align-items-start" style="width: 80%">
+    
+    <div class="container pt-3">
+
+      <div class="row height d-flex  align-items-start">
+  
+        <div class="col-md-8">
+          <form>
+          <div class="search">
+            <i class="fa fa-search"></i>
+            <input type="text" name="product" class="form-control" placeholder="Search for products">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </div>
+          </form>
+        </div>
+        
+      </div>
+  </div>
+  <div class="d-flex flex-row justify-content-center">
+    <div class="d-flex flex-row flex-wrap justify-content-start">
+
+      {% for product in products %}
+      {% for i in products  %}
+      <div class="card m-2 card-anim" style="width: 18rem;">
+        <div class="card-body text-center zoom-anim" >
+          <a href="{{product.id}}" class="text-decoration-none text-dark">
+          <img class="card-img-top p-3" style="max-width: 18rem;max-height: 18rem;height:auto; width: auto" src="/static/{{ product.p_image }}" alt="Card image cap">
+          
+            <h5 class="card-title" style="height: 50px">{{ product.p_name }}</h5>
+            <p class="card-text">Rating: <span class="bg-warning text-light p-1" style="border-radius: 5px">{{ product.p_rating }} </span>&nbsp({{ product.p_buycount }})</p>
+            <p class="card-text fw-bold" style="font-size: x-large">₹{{product.p_price}}</p>
+            
+          </a>
+          </div>
+      </div>
+      <div class="card m-2 card-anim" style="width: 18rem;">
+        <div class="card-body text-center zoom-anim" >
+          <a href="{{product.id}}" class="text-decoration-none text-dark">
+          <img class="card-img-top p-3" style="max-width: 18rem;max-height: 18rem;height:auto; width: auto" src="/static/{{ product.p_image }}" alt="Card image cap">
+          
+            <h5 class="card-title" style="height: 50px">{{ product.p_name }}</h5>
+            <p class="card-text">Rating: <span class="bg-warning text-light p-1" style="border-radius: 5px">{{ product.p_rating }} </span>&nbsp({{ product.p_buycount }})</p>
+            <p class="card-text fw-bold" style="font-size: x-large">₹{{product.p_price}}</p>
+            
+          </a>
+          </div>
+      </div>
+      <div class="card m-2 card-anim" style="width: 18rem;">
+        <div class="card-body text-center zoom-anim" >
+          <a href="{{product.id}}" class="text-decoration-none text-dark">
+          <img class="card-img-top p-3" style="max-width: 18rem;max-height: 18rem;height:auto; width: auto" src="/static/{{ product.p_image }}" alt="Card image cap">
+          
+            <h5 class="card-title" style="height: 50px">{{ product.p_name }}</h5>
+            <p class="card-text">Rating: <span class="bg-warning text-light p-1" style="border-radius: 5px">{{ product.p_rating }} </span>&nbsp({{ product.p_buycount }})</p>
+            <p class="card-text fw-bold" style="font-size: x-large">₹{{product.p_price}}</p>
+            
+          </a>
+          </div>
+      </div>
+      
+      {% endfor %}
+      
+      
+      
+      {% endfor %}
+
+    </div>
+</div>
+</div>
+
+{% comment %} <div class="container pt-3">
 
     <div class="row height d-flex justify-content-center align-items-center">
 
       <div class="col-md-8">
-
+        <form>
         <div class="search">
           <i class="fa fa-search"></i>
-          <input type="text" class="form-control" placeholder="Search for products">
-          <button class="btn btn-primary">Search</button>
+          <input type="text" name="product" class="form-control" placeholder="Search for products">
+          <button type="submit" class="btn btn-primary">Search</button>
         </div>
-        
+      </form>
       </div>
       
     </div>
 </div>
 
 <div class="d-flex flex-row space-around">
-    
+
+{% for category in categories %}
 <div class="form-check m-2">
-    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-    <label class="form-check-label" for="flexRadioDefault1">
-      Football
-    </label>
-  </div>
-  <div class="form-check m-2">
-    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-    <label class="form-check-label" for="flexRadioDefault2">
-      Cricket
-    </label>
-  </div>
-  <div class="form-check m-2">
-    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-    <label class="form-check-label" for="flexRadioDefault2">
-      Badminton
-    </label>
-  </div>
-  <div class="form-check m-2">
-    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-    <label class="form-check-label" for="flexRadioDefault2">
-      BasketBall
-    </label>
-  </div>
+  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+  <label class="form-check-label" for="flexRadioDefault1">
+    {{ category }}
+  </label>
+</div>
+{% endfor %}
+
+
 </div>
 
 
@@ -55,44 +126,22 @@
 
 {% for product in products %}
 <div class="card m-2" style="width: 18rem;">
+  <div class="card-body text-center zoom-anim" >
+    <a href="{{product.id}}" class="text-decoration-none text-dark">
+    <img class="card-img-top p-3" style="max-width: 18rem;max-height: 18rem;height:auto; width: auto" src="/static/{{ product.p_image }}" alt="Card image cap">
     
-    <img class="card-img-top p-3" src="/static/{{ product.p_image }}" alt="Card image cap">
-    <div class="card-body text-center">
       <h5 class="card-title" style="height: 50px">{{ product.p_name }}</h5>
-      {% comment %} <p class="card-text">Rating: <span class="bg-warning text-light p-1" style="border-radius: 5px">{{ product.p_rating }} </span>&nbsp({{ product.p_buycount }})</p> {% endcomment %}
+      <p class="card-text">Rating: <span class="bg-warning text-light p-1" style="border-radius: 5px">{{ product.p_rating }} </span>&nbsp({{ product.p_buycount }})</p>
       <p class="card-text fw-bold" style="font-size: x-large">₹{{product.p_price}}</p>
-      <a href="#" class="btn btn-dark">Buy Now</a>
       
-    </div>
-</div>
-
-<div class="card m-2" style="width: 18rem;">
-    
-    <img class="card-img-top p-3" src="/static/{{ product.p_image }}" alt="Card image cap">
-    <div class="card-body text-center">
-      <h5 class="card-title" style="height: 50px">{{ product.p_name }}</h5>
-      {% comment %} <p class="card-text">Rating: <span class="bg-warning text-light p-1" style="border-radius: 5px">{{ product.p_rating }} </span>&nbsp({{ product.p_buycount }})</p> {% endcomment %}
-      <p class="card-text fw-bold" style="font-size: x-large">₹{{product.p_price}}</p>
-      <a href="#" class="btn btn-dark">Buy Now</a>
-      
-    </div>
-</div>
-
-<div class="card m-2" style="width: 18rem;">
-    
-    <img class="card-img-top p-3" src="/static/{{ product.p_image }}" alt="Card image cap">
-    <div class="card-body text-center">
-      <h5 class="card-title" style="height: 50px">{{ product.p_name }}</h5>
-      {% comment %} <p class="card-text">Rating: <span class="bg-warning text-light p-1" style="border-radius: 5px">{{ product.p_rating }} </span>&nbsp({{ product.p_buycount }})</p> {% endcomment %}
-      <p class="card-text fw-bold" style="font-size: x-large">₹{{product.p_price}}</p>
-      <a href="#" class="btn btn-dark">Buy Now</a>
-      
+    </a>
     </div>
 </div>
 
 
 
 
-{% endfor %}
+
+{% endfor %} {% endcomment %}
 
 {% endblock content %}

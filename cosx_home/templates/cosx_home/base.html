@@ -8,13 +8,23 @@
            }
     
            
-           
+           .error{
+            width: 100%;
+            background-color: rgba(255,0,0,50);
+            border: 0;
+            padding: 10px;
+           }
     
            .search{
            position: relative;
            box-shadow: 0 0 40px rgba(51, 51, 51, .1);
              
            }
+
+           .card-anim:hover{
+            box-shadow: 0px 0px 0px 2px rgba(0,0,0,50);
+           }
+
     
            .search input{
     
@@ -52,6 +62,8 @@
             background: black;
     
            }
+            {% block style %}
+            {% endblock style %}
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
 </head>
@@ -66,14 +78,18 @@
           <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
             <li><a href="{% url 'cosx-home' %}" class="text-light nav-link px-2 link-primary">Home</a></li>
             <li><a href="{% url 'cosx-products' %}" class="text-light nav-link px-2 link-primary">Products</a></li>
-            <li><a href="#" class="text-light nav-link px-2 link-primary">Cart</a></li>
+            {% if user.is_authenticated %}            
+            <li><a href="{% url 'cart' %}" class="text-light nav-link px-2 link-primary">Cart</a></li>
+            <li><a href="{% url 'wallet' %}" class="text-light nav-link px-2 link-primary">Wallet</a></li>
+            <li><a href="{% url 'orders' %}" class="text-light nav-link px-2 link-primary">Orders</a></li>
             <li><a href="#" class="text-light nav-link px-2 link-primary">Wishlist</a></li>
-            <li><a href="#" class="text-light nav-link px-2 link-primary">Wallet</a></li>
+            {% endif %}
           </ul>
     
           <div class="w-25 text-end ">
 
             {% if user.is_authenticated %}
+            
             <a href="{% url 'cosx-home' %}" type="button" class="btn text-light border-light ">{{user.username}}</a>
             <a href="{% url 'logout' %}" type="button" class="btn text-light">Logout</a>
             {% else %}
