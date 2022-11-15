@@ -33,8 +33,12 @@
                     <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
                         <h5 class="mb-0">₹{{ product.p_price }}</h5>
                     </div>
-                    <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                        <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
+                    <div class="col-md-2">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" visibility="false" value="{{product.id}}">
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
                     </div>
                 </div>
             </div>

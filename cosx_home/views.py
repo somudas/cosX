@@ -133,6 +133,11 @@ def productdetails(request,pk):
 def cart(request):
     product_ids = Cart.objects.filter(user=request.user.id)
 
+    if request.method == 'POST':
+        p_id = request.POST.get('id')
+        product = Products.objects.filter(id=p_id)[0]
+        Cart.objects.filter(Q(product=product) & Q(user=request.user)).delete()
+
     if len(product_ids) == 0:
         return render(request, 'cosx_home/cart.html', context={})
     
@@ -147,6 +152,12 @@ def cart(request):
 
 @login_required(login_url="/login/")
 def cart_add(request, pk): 
+
+    if request.method == 'POST':
+        p_id = request.POST.get('id')
+        product = Products.objects.filter(id=p_id)[0]
+        Cart.objects.filter(Q(product=product) & Q(user=request.user)).delete()
+
     product=Products.objects.get(id=pk)
     
     cart = Cart(user=request.user, product=product)

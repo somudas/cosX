@@ -16,6 +16,7 @@ class Products(models.Model):
     p_category = models.CharField(max_length=100)
     p_image = models.ImageField(upload_to="static/images/")
     p_price = models.DecimalField(max_digits=7, decimal_places=2)
+
     
 class Orders(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

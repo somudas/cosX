@@ -66,10 +66,14 @@
     let rating = document.getElementsByClassName('rating-color');
     console.log(rating[0].innerHTML)
     for (let i = 0; i < rating.length; i++) {
+        if (parseInt(rating[i].innerHTML) == 0 ){
+            rating[i].style.backgroundColor = "grey";
+            continue;
+          }
       if (parseInt(rating[i].innerHTML) >=4 )
         rating[i].style.backgroundColor = "green";
       else if(parseInt(rating[i].innerHTML) >=3)
-        rating[i].style.backgroundColor = "yellow";
+        rating[i].style.backgroundColor = "orange";
       else rating[i].style.backgroundColor = "red";
     }
   </script>
