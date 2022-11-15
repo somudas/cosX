@@ -2,7 +2,7 @@ from genericpath import exists
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
-from .models import Products, Cart, Wallet, Orders
+from .models import Products, Cart, Wallet, Orders, Rating, Wishlist
 from django.db.models import Q
 
 from django.contrib.auth.decorators import login_required
@@ -69,8 +69,37 @@ def products(request):
     all_products = Products.objects.all()
 
     p_categories = set([prod.p_category for prod in all_products])
-    print(p_categories)
+    #print(p_categories)
     
+
+
+    if request.method == 'POST':
+        category = {}
+        all_none = True
+        max_price = request.POST.get('max-price')
+        all_products = Products.objects.none()
+
+        active_categories = []
+
+        for c in p_categories:
+            if request.POST.get(c) is not None:
+                active_categories.append(c)
+        if len(active_categories) == 0:
+            active_categories = p_categories
+        all_products = Products.objects.filter( (Q(p_category__in = active_categories)) & (Q(p_price__lte = max_price)) )        
+
+        #print(f"category: {all_products[0].p_image}")
+        for i in range(len(all_products)):
+            all_products[i].p_image = str(all_products[i].p_image)[len("/static/")-1: ]
+            all_products[i].p_name = (str(all_products[i].p_name)[:40] + '..') if len(str(all_products[i].p_name)) > 40 else str(all_products[i].p_name)
+        context={
+            'products':all_products,
+            'categories':p_categories
+        }
+
+        return render(request, 'cosx_home/products.html', context)
+
+
 
     query = request.GET.get('product', '')
     
@@ -79,10 +108,12 @@ def products(request):
 
 
     for i in range(len(all_products)):
+        all_products[i].p_buycount = len(Orders.objects.filter(product=all_products[i]))
+        all_products[i].save() 
         all_products[i].p_image = str(all_products[i].p_image)[len("/static/")-1: ]
         all_products[i].p_name = (str(all_products[i].p_name)[:40] + '..') if len(str(all_products[i].p_name)) > 40 else str(all_products[i].p_name)
         
-        #print(all_products[i].p_name)
+        
     context={
         'products':all_products,
         'categories':p_categories
@@ -109,7 +140,7 @@ def cart(request):
     for prod in product_ids:
         all_products.append(Products.objects.get(id=prod.product.id))
     
-
+    
 
     return render(request, 'cosx_home/cart.html', context={'products': all_products, 'n_items': len(all_products)})
 
@@ -245,10 +276,63 @@ def orders(request):
     context = {
         'orders': all_orders
     }
-
+    if len(all_orders) == 0:
+        context = {}
     return render(request, 'cosx_home/orders.html', context)
 
 def order_details(request, pk):
     order = Orders.objects.filter(id=pk)[0]
+    f = False
+    rate_value = None
+    if len(Rating.objects.filter(order=order)) == 0:
+        f = True
+    else: 
+        rate_value = Rating.objects.filter(order=order)[0].rating
+
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        rating = (int(rating)/20)
+        if len(Rating.objects.filter(order=order)) == 0:
+            rating_obj = Rating(order=order, rating=rating, product=order.product)
+            rating_obj.save()
+
+            # calculating rating value when a new rating is added
+            ratings = Rating.objects.filter(product = order.product)            
+            updated_rating = 0 
+            
+            for i in ratings:
+                updated_rating += i.rating
+            
+            updated_rating /= len(ratings)
+            
+            # updating rating value
+            prod = Products.objects.filter(id=order.product.id)[0]
+            prod.p_rating = updated_rating
+            prod.save()
+
+            f = False        
+        return render(request, 'cosx_home/order_details.html', context={'order': order, 'f': f, 'rating': rating})    
     
-    return render(request, 'cosx_home/order_details.html', context={'order': order})
+    return render(request, 'cosx_home/order_details.html', context={'order': order, 'f': f, 'rating': rate_value})
+
+
+
+def wishlist(request):
+    product_ids=Wishlist.objects.filter(user=request.user.id)
+    if len(product_ids) == 0:
+        return render(request, 'cosx_home/wishlist.html', context={})
+    
+    all_products = []
+    for prod in product_ids:
+        all_products.append(Products.objects.get(id=prod.product.id))
+    
+    return render(request, 'cosx_home/wishlist.html', context={'products': all_products, 'n_items': len(all_products)})
+
+def wishlist_add(request, pk): 
+    product=Products.objects.get(id=pk)
+    wishlist = Wishlist(user=request.user, product=product)
+    for i in Wishlist.objects.all():
+        if i.user.id == request.user.id and i.product.id == product.id:
+            return redirect('/wishlist')
+    wishlist.save()
+    return redirect('/wishlist')

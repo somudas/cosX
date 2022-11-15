@@ -1,6 +1,9 @@
 {% extends 'cosx_home/base.html' %}
 {% load static %}
 
+{% block title %}
+<title> Wishlist </title>
+{% endblock title %}
 {% block content %}
 
     {% if products %}
@@ -12,10 +15,8 @@
                     
                     
                     <div class=" d-flex justify-content-between m-4">
-                        <h3 class="fw-normal mb-0 text-black"> Cart ({{ n_items }})</h3>
-                        <a href="/checkout_fromcart/" type="button" class="btn btn-warning btn-block btn-lg">Proceed to checkout</a>
+                        <h3 class="fw-normal mb-0 text-black"> Wishlist ({{ n_items }})</h3>
                     </div>
-                    
               {% for product in products %}
               <div class="card rounded-3 mb-4">
                   <div class="card-body p-4">
@@ -51,9 +52,8 @@
 </section>
 {% else %}
 
-<div class="card d-flex justify-content-center container text-center" style="height: 90vh;">
-    
-    <h1 class="display-5">your cart is empty :( </h1>
+<div class="card w-100 h-100 text-center">
+    <h1 class="display-5">your wishlist is empty :( </h1>
 </div>
 
 {% endif %}

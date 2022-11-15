@@ -40,7 +40,7 @@
                                 <h5 class="text-uppercase">{{product.p_name}}</h5>
                                 <div class="price d-flex flex-row align-items-center"> 
                                     <h4 class="act-price">₹ {{product.p_price}}</h4>
-                                    <p class="card-text">&nbsp &nbsp<span class="bg-warning text-light p-1" style="border-radius: 5px">{{ product.p_rating }} </span>&nbsp({{ product.p_buycount }})</p>
+                                    <p class="card-text">&nbsp &nbsp<span class="rating-color text-light p-1" style="border-radius: 5px">{{ product.p_rating }} </span>&nbsp({{ product.p_buycount }})</p>
 
                                 </div>
                             </div>
@@ -61,5 +61,17 @@
         </div>
     </div>
 </div>
+
+<script>
+    let rating = document.getElementsByClassName('rating-color');
+    console.log(rating[0].innerHTML)
+    for (let i = 0; i < rating.length; i++) {
+      if (parseInt(rating[i].innerHTML) >=4 )
+        rating[i].style.backgroundColor = "green";
+      else if(parseInt(rating[i].innerHTML) >=3)
+        rating[i].style.backgroundColor = "yellow";
+      else rating[i].style.backgroundColor = "red";
+    }
+  </script>
 
 {% endblock content %}
