@@ -272,7 +272,6 @@ def checkout_fromcart(request):
 
 
 def wallet(request):
-
     return render(request, 'cosx_home/wallet.html', context={'wallet':  Wallet.objects.filter(user=request.user)[0].wallet})
 
 
